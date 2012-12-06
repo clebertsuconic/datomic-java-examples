@@ -36,7 +36,13 @@ public class PingConsumer {
         m.put("trust-store-password", "transactor");
         return m;
     }
-    public static void main(String[] args) {
+
+    static ClientSession session = null;
+
+    static ServerLocator serverLocator ;
+   static ClientSessionFactory sf;
+
+   public static void main(String[] args) {
         SLF4JBridgeHandler.install();
         LogManager.getLogManager().getLogger("").info("Ping Consumer Starting");
 
@@ -55,10 +61,10 @@ public class PingConsumer {
             server.start();
 
             // Step 3. As we are not using a JNDI environment we instantiate the objects directly
-            ServerLocator serverLocator = HornetQClient.createServerLocatorWithoutHA(new TransportConfiguration(InVMConnectorFactory.class.getName()));
-            ClientSessionFactory sf = serverLocator.createSessionFactory();
+             serverLocator = HornetQClient.createServerLocatorWithoutHA(new TransportConfiguration(InVMConnectorFactory.class.getName()));
+             sf = serverLocator.createSessionFactory();
 
-           final String queueName = "queue.exampleQueue";
+             final String queueName = "queue.exampleQueue";
 
            {
             // Step 4. Create a core queue
@@ -69,7 +75,7 @@ public class PingConsumer {
             coreSession.close();
            }
 
-            ClientSession session = null;
+
 
             try
             {
