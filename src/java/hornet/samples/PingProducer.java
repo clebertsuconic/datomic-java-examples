@@ -57,11 +57,11 @@ public class PingProducer {
 
                 message.putStringProperty("prop", "ping " + n);
 
-                System.out.println("Sending the message " + n);
+               if (n % 100 == 0)
+                  System.out.println("Sending the message " + n);
 
                 producer.send(message);
 
-                System.out.println("Close the session");
                 session.close();
                 sf.close();
                 // serverLocator.close();

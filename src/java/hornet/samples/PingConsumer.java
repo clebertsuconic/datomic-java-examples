@@ -58,14 +58,16 @@ public class PingConsumer {
             ServerLocator serverLocator = HornetQClient.createServerLocatorWithoutHA(new TransportConfiguration(InVMConnectorFactory.class.getName()));
             ClientSessionFactory sf = serverLocator.createSessionFactory();
 
+           final String queueName = "queue.exampleQueue";
+
+           {
             // Step 4. Create a core queue
             ClientSession coreSession = sf.createSession(false, false, false);
-
-            final String queueName = "queue.exampleQueue";
 
             coreSession.createQueue(queueName, queueName, true);
 
             coreSession.close();
+           }
 
             ClientSession session = null;
 
@@ -78,21 +80,27 @@ public class PingConsumer {
                 ClientConsumer messageConsumer = session.createConsumer(queueName);
                 session.start();
 
+               int i = 0;
                 System.out.println("Waiting for messages...");
                 while (true) {
 
                     // Step 8. Receive the message.
                     ClientMessage messageReceived = messageConsumer.receive();
                     messageReceived.acknowledge();
-                    System.out.println("Received TextMessage:" + messageReceived.getStringProperty("prop"));
+                    i++;
+                    if (i % 100 == 0)
+                    {
+                       System.out.println("Received TextMessage:" + messageReceived.getStringProperty("prop"));
+                    }
                 }
             }
             finally
             {
-                if (session != null) {
-                    session.close();
-                }
 
+                if (session != null)
+                {
+                   session.close();
+                }
                 // Step 9. Be sure to close our resources!
                 if (sf != null)
                 {
